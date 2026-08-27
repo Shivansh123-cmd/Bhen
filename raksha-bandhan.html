@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raksha Bandhan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=Poppins:wght@300;400;500;600&family=Rozha+One&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --maroon: #6b1327;
+    --deep-red: #8a1c34;
+    --gold: #d4a441;
+    --gold-light: #f0d896;
+    --cream: #fbf3e3;
+    --marigold: #e8862c;
+    --thread-red: #b7223a;
+    --thread-gold: #eec463;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  body{
+    font-family:'Poppins', sans-serif;
+    background: var(--cream);
+    color: var(--maroon);
+    overflow-x:hidden;
+    min-height:100vh;
+  }
+
+  /* ---------- POPUP ---------- */
+  #popup-overlay{
+    position:fixed; inset:0;
+    background: radial-gradient(circle at center, #3a0a15 0%, #1c0509 100%);
+    display:flex; align-items:center; justify-content:center;
+    z-index:1000;
+    transition: opacity 0.7s ease, visibility 0.7s ease;
+  }
+  #popup-overlay.hidden{
+    opacity:0; visibility:hidden; pointer-events:none;
+  }
+
+  .popup-box{
+    background: var(--cream);
+    border-radius: 18px;
+    padding: 48px 40px 40px;
+    width: min(90vw, 420px);
+    text-align:center;
+    position:relative;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    border: 3px solid var(--gold);
+    animation: rise 0.8s cubic-bezier(.2,.8,.2,1);
+  }
+
+  @keyframes rise{
+    from{ opacity:0; transform: translateY(40px) scale(0.95); }
+    to{ opacity:1; transform: translateY(0) scale(1); }
+  }
+
+  .popup-icon{
+    font-size: 46px;
+    margin-bottom: 6px;
+    filter: drop-shadow(0 4px 6px rgba(107,19,39,0.3));
+  }
+
+  .popup-box h2{
+    font-family:'Yeseva One', serif;
+    font-size: 26px;
+    color: var(--deep-red);
+    margin-bottom: 8px;
+  }
+
+  .popup-box p{
+    font-size: 14px;
+    color: #8a5a63;
+    margin-bottom: 24px;
+    line-height:1.5;
+  }
+
+  .popup-box input{
+    width:100%;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 2px solid #e6cfa8;
+    background: #fff;
+    font-family:'Poppins', sans-serif;
+    font-size: 15px;
+    color: var(--maroon);
+    outline:none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    text-align:center;
+  }
+  .popup-box input:focus{
+    border-color: var(--gold);
+    box-shadow: 0 0 0 4px rgba(212,164,65,0.2);
+  }
+  .popup-box input::placeholder{ color:#c9a998; }
+
+  .popup-box button{
+    margin-top: 18px;
+    width:100%;
+    padding: 14px;
+    border:none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--marigold), var(--deep-red));
+    color: #fff;
+    font-family:'Poppins', sans-serif;
+    font-weight:600;
+    font-size: 15px;
+    letter-spacing: 0.03em;
+    cursor:pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 8px 20px rgba(138,28,52,0.35);
+  }
+  .popup-box button:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(138,28,52,0.45);
+  }
+  .popup-box button:active{ transform: translateY(0); }
+
+  .error-msg{
+    color: var(--deep-red);
+    font-size: 12px;
+    margin-top: 8px;
+    height: 14px;
+    opacity:0;
+    transition: opacity 0.2s ease;
+  }
+  .error-msg.show{ opacity:1; }
+
+  /* decorative thread motif on popup */
+  .popup-thread{
+    position:absolute; top:-14px; left:50%; transform:translateX(-50%);
+    width:60px; height:60px;
+    background: radial-gradient(circle, var(--thread-gold), var(--thread-red));
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:26px;
+    box-shadow: 0 6px 16px rgba(183,34,58,0.4);
+    border: 3px solid var(--cream);
+  }
+
+  /* ---------- MAIN SITE ---------- */
+  #site{
+    opacity:0;
+    transition: opacity 1s ease;
+  }
+  #site.reveal{ opacity:1; }
+
+  .bg-pattern{
+    position:fixed; inset:0;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(212,164,65,0.10) 0, transparent 45%),
+      radial-gradient(circle at 85% 15%, rgba(183,34,58,0.08) 0, transparent 40%),
+      radial-gradient(circle at 50% 90%, rgba(232,134,44,0.10) 0, transparent 50%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  header.hero{
+    position:relative;
+    min-height: 100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding: 40px 20px;
+    overflow:hidden;
+    z-index:1;
+  }
+
+  /* rakhi thread swinging in hero */
+  .rakhi-hang{
+    position:relative;
+    margin-bottom: 18px;
+  }
+  .thread-string{
+    width:3px;
+    height:70px;
+    background: linear-gradient(var(--gold), var(--thread-red));
+    margin:0 auto;
+  }
+  .rakhi-charm{
+    width:90px; height:90px;
+    margin: -2px auto 0;
+    border-radius:50%;
+    background:
+      radial-gradient(circle at 35% 30%, #fff6dc, var(--gold) 55%, var(--marigold) 100%);
+    display:flex; align-items:center; justify-content:center;
+    font-size:40px;
+    box-shadow: 0 10px 30px rgba(138,28,52,0.35), inset 0 -4px 8px rgba(138,28,52,0.2);
+    animation: swing 4s ease-in-out infinite;
+    transform-origin: top center;
+    border: 3px solid var(--gold-light);
+  }
+  @keyframes swing{
+    0%,100%{ transform: rotate(-6deg); }
+    50%{ transform: rotate(6deg); }
+  }
+
+  .eyebrow{
+    font-size: 13px;
+    letter-spacing: 0.25em;
+    text-transform:uppercase;
+    color: var(--marigold);
+    font-weight:600;
+    margin-bottom: 14px;
+  }
+
+  h1.greeting{
+    font-family:'Yeseva One', serif;
+    font-size: clamp(32px, 6vw, 58px);
+    color: var(--deep-red);
+    line-height:1.2;
+    margin-bottom: 14px;
+  }
+  h1.greeting .sister-name{
+    color: var(--marigold);
+    display:block;
+    font-family: 'Rozha One', serif;
+    font-size: clamp(38px, 8vw, 72px);
+    margin-top: 6px;
+  }
+
+  .hero-sub{
+    max-width: 560px;
+    font-size: 16px;
+    color: #8a5a63;
+    line-height:1.7;
+    margin-bottom: 32px;
+  }
+
+  .scroll-hint{
+    font-size: 12px;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    text-transform:uppercase;
+    animation: bob 2s ease-in-out infinite;
+  }
+  @keyframes bob{
+    0%,100%{ transform: translateY(0); opacity:0.6; }
+    50%{ transform: translateY(8px); opacity:1; }
+  }
+
+  /* floating diyas / petals */
+  .float-el{
+    position:absolute;
+    font-size: 22px;
+    opacity:0.5;
+    animation: float 10s ease-in-out infinite;
+    z-index:0;
+  }
+  @keyframes float{
+    0%,100%{ transform: translateY(0) rotate(0deg); }
+    50%{ transform: translateY(-30px) rotate(15deg); }
+  }
+
+  section{
+    position:relative;
+    z-index:1;
+    padding: 90px 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .section-title{
+    font-family:'Yeseva One', serif;
+    font-size: clamp(26px, 4vw, 38px);
+    text-align:center;
+    color: var(--deep-red);
+    margin-bottom: 12px;
+  }
+  .section-sub{
+    text-align:center;
+    color:#8a5a63;
+    font-size:14px;
+    margin-bottom: 50px;
+    max-width: 480px;
+    margin-left:auto; margin-right:auto;
+  }
+
+  /* Promise thread section */
+  .promises{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 22px;
+  }
+  .promise-card{
+    background: #fff;
+    border-radius: 16px;
+    padding: 30px 24px;
+    text-align:center;
+    box-shadow: 0 10px 30px rgba(107,19,39,0.07);
+    border: 1px solid #f0e2c4;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .promise-card:hover{
+    transform: translateY(-8px);
+    box-shadow: 0 18px 40px rgba(107,19,39,0.14);
+  }
+  .promise-icon{
+    font-size: 34px;
+    margin-bottom: 14px;
+    display:block;
+  }
+  .promise-card h3{
+    font-family:'Yeseva One', serif;
+    font-size: 18px;
+    color: var(--maroon);
+    margin-bottom: 8px;
+  }
+  .promise-card p{
+    font-size: 13px;
+    color: #a37a80;
+    line-height:1.6;
+  }
+
+  /* Letter section */
+  .letter-wrap{
+    background: linear-gradient(135deg, #fffaf0, var(--cream));
+    border-radius: 20px;
+    padding: 50px clamp(24px, 6vw, 60px);
+    box-shadow: 0 20px 50px rgba(107,19,39,0.1);
+    border: 1px solid #f0e2c4;
+    position:relative;
+  }
+  .letter-wrap::before{
+    content:'"';
+    position:absolute;
+    top:10px; left:24px;
+    font-family:'Yeseva One', serif;
+    font-size: 100px;
+    color: var(--gold-light);
+    line-height:1;
+  }
+  .letter-text{
+    font-size: 16px;
+    line-height: 2;
+    color: #6b3a42;
+    position:relative;
+    z-index:1;
+  }
+  .letter-text .highlight-name{
+    color: var(--deep-red);
+    font-weight:600;
+  }
+  .letter-sign{
+    margin-top: 24px;
+    font-family:'Yeseva One', serif;
+    font-size: 18px;
+    color: var(--marigold);
+    text-align:right;
+  }
+
+  /* Gallery of moments (decorative) */
+  .moments{
+    display:flex;
+    gap: 16px;
+    overflow-x:auto;
+    padding-bottom: 10px;
+    scroll-snap-type: x mandatory;
+  }
+  .moment-card{
+    min-width: 200px;
+    height: 240px;
+    border-radius: 16px;
+    scroll-snap-align:start;
+    display:flex; align-items:flex-end;
+    padding: 18px;
+    color:#fff;
+    font-family:'Yeseva One', serif;
+    font-size: 15px;
+    position:relative;
+    overflow:hidden;
+  }
+  .moment-card::after{
+    content:'';
+    position:absolute; inset:0;
+    background: linear-gradient(to top, rgba(0,0,0,0.55), transparent 60%);
+  }
+  .moment-card span{ position:relative; z-index:1; }
+  .m1{ background: linear-gradient(135deg, #b7223a, #6b1327); }
+  .m2{ background: linear-gradient(135deg, #e8862c, #b7223a); }
+  .m3{ background: linear-gradient(135deg, #d4a441, #8a1c34); }
+  .m4{ background: linear-gradient(135deg, #8a1c34, #3a0a15); }
+
+  /* Footer / closing */
+  footer{
+    text-align:center;
+    padding: 70px 24px 50px;
+    position:relative;
+    z-index:1;
+  }
+  .footer-rakhi{
+    font-size: 30px;
+    margin-bottom: 14px;
+  }
+  footer h2{
+    font-family:'Yeseva One', serif;
+    font-size: clamp(24px, 4vw, 34px);
+    color: var(--deep-red);
+    margin-bottom: 10px;
+  }
+  footer p{
+    color:#8a5a63;
+    font-size: 14px;
+    margin-bottom: 26px;
+  }
+  .love-btn{
+    display:inline-block;
+    padding: 14px 36px;
+    background: linear-gradient(135deg, var(--marigold), var(--deep-red));
+    color:#fff;
+    border-radius: 40px;
+    font-weight:600;
+    font-size: 14px;
+    letter-spacing:0.03em;
+    text-decoration:none;
+    box-shadow: 0 10px 26px rgba(138,28,52,0.35);
+    cursor:pointer;
+    border:none;
+    transition: transform 0.2s ease;
+  }
+  .love-btn:hover{ transform: translateY(-3px) scale(1.03); }
+
+  .confetti{
+    position:fixed;
+    top:-20px;
+    z-index:2000;
+    pointer-events:none;
+    font-size: 20px;
+    animation: fall linear forwards;
+  }
+  @keyframes fall{
+    to{ transform: translateY(110vh) rotate(360deg); opacity:0.2; }
+  }
+
+  @media (max-width:600px){
+    section{ padding: 60px 18px; }
+    .letter-wrap{ padding: 36px 22px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- POPUP -->
+  <div id="popup-overlay">
+    <div class="popup-box">
+      <div class="popup-thread">🪢</div>
+      <div class="popup-icon">🎀</div>
+      <h2>Happy Raksha Bandhan!</h2>
+      <p>Before we begin, tell me your name so I can make this page just for you.</p>
+      <input type="text" id="nameInput" placeholder="Enter your name" maxlength="30" autofocus>
+      <div class="error-msg" id="errorMsg">Please enter your name ✨</div>
+      <button id="submitName">Reveal My Page</button>
+    </div>
+  </div>
+
+  <!-- MAIN SITE -->
+  <div id="site">
+    <div class="bg-pattern"></div>
+
+    <header class="hero">
+      <span class="float-el" style="top:12%; left:8%;">🪔</span>
+      <span class="float-el" style="top:20%; right:10%; animation-delay:2s;">🌸</span>
+      <span class="float-el" style="bottom:18%; left:12%; animation-delay:4s;">🪔</span>
+      <span class="float-el" style="bottom:25%; right:8%; animation-delay:1s;">✨</span>
+
+      <div class="rakhi-hang">
+        <div class="thread-string"></div>
+        <div class="rakhi-charm">🪢</div>
+      </div>
+
+      <div class="eyebrow">A Thread of Love</div>
+      <h1 class="greeting">
+        Happy Raksha Bandhan
+        <span class="sister-name" id="heroName">Dear Sister</span>
+      </h1>
+      <p class="hero-sub">
+        Every thread tied on this day carries more than silk and color — it carries years of memories, fights, laughter, and a promise that never breaks. This one's for you.
+      </p>
+      <div class="scroll-hint">Scroll Down ↓</div>
+    </header>
+
+    <section id="promises-section">
+      <h2 class="section-title">My Promise To You</h2>
+      <p class="section-sub">A brother's rakhi isn't just worn on the wrist — it's a promise kept all year round.</p>
+      <div class="promises">
+        <div class="promise-card">
+          <span class="promise-icon">🛡️</span>
+          <h3>I'll Always Protect You</h3>
+          <p>Through every storm, big or small, I've got your back — always have, always will.</p>
+        </div>
+        <div class="promise-card">
+          <span class="promise-icon">📞</span>
+          <h3>I'll Always Be There</h3>
+          <p>One call away, whether it's good news to celebrate or a bad day to fix.</p>
+        </div>
+        <div class="promise-card">
+          <span class="promise-icon">😂</span>
+          <h3>I'll Never Stop Teasing You</h3>
+          <p>Because what's a sibling bond without a little harmless mazaak?</p>
+        </div>
+        <div class="promise-card">
+          <span class="promise-icon">❤️</span>
+          <h3>I'll Always Love You</h3>
+          <p>No distance, no fight, no time can ever change that. Not now, not ever.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="letter-section">
+      <h2 class="section-title">A Little Note For You</h2>
+      <div class="letter-wrap">
+        <p class="letter-text">
+          Dear <span class="highlight-name" id="letterName">Sister</span>,<br><br>
+          Today isn't just about tying a rakhi — it's a reminder of everything we've shared since we were kids. All the fights over the remote, the secrets we kept from Mom and Dad, and the way you've always known exactly how to annoy me and comfort me in the same breath.
+          <br><br>
+          Thank you for being my constant. On this Raksha Bandhan, I just want you to know — whatever life throws at us, I'm right here. Today and always.
+        </p>
+        <p class="letter-sign">— With all my love</p>
+      </div>
+    </section>
+
+    <section id="moments-section">
+      <h2 class="section-title">Little Moments, Big Memories</h2>
+      <p class="section-sub">Some things a rakhi thread will always remind me of.</p>
+      <div class="moments">
+        <div class="moment-card m1"><span>Childhood fights 🧸</span></div>
+        <div class="moment-card m2"><span>Sweets & Mithai 🍬</span></div>
+        <div class="moment-card m3"><span>Every rakhi tied 🪢</span></div>
+        <div class="moment-card m4"><span>Years of inside jokes 😄</span></div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-rakhi">🪢🎀🪔</div>
+      <h2 id="footerName">Happy Raksha Bandhan, Sister!</h2>
+      <p>May this thread always remind you how loved you are.</p>
+      <button class="love-btn" id="celebrateBtn">Send Some Love 💛</button>
+    </footer>
+  </div>
+
+<script>
+  const overlay = document.getElementById('popup-overlay');
+  const input = document.getElementById('nameInput');
+  const errorMsg = document.getElementById('errorMsg');
+  const submitBtn = document.getElementById('submitName');
+  const site = document.getElementById('site');
+
+  const heroName = document.getElementById('heroName');
+  const letterName = document.getElementById('letterName');
+  const footerName = document.getElementById('footerName');
+
+  function revealSite(name){
+    const clean = name.trim();
+    heroName.textContent = clean;
+    letterName.textContent = clean;
+    footerName.textContent = `Happy Raksha Bandhan, ${clean}!`;
+    overlay.classList.add('hidden');
+    site.classList.add('reveal');
+    document.body.style.overflow = 'auto';
+  }
+
+  function trySubmit(){
+    const name = input.value;
+    if(!name.trim()){
+      errorMsg.classList.add('show');
+      input.style.borderColor = '#b7223a';
+      return;
+    }
+    errorMsg.classList.remove('show');
+    revealSite(name);
+  }
+
+  submitBtn.addEventListener('click', trySubmit);
+  input.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') trySubmit();
+  });
+  input.addEventListener('input', () => {
+    errorMsg.classList.remove('show');
+    input.style.borderColor = '#e6cfa8';
+  });
+
+  // lock scroll while popup active
+  document.body.style.overflow = 'hidden';
+
+  // confetti burst on "Send Some Love"
+  const celebrateBtn = document.getElementById('celebrateBtn');
+  const petals = ['🌸','🪔','🎀','✨','🪢'];
+  celebrateBtn.addEventListener('click', () => {
+    for(let i=0; i<28; i++){
+      const el = document.createElement('div');
+      el.className = 'confetti';
+      el.textContent = petals[Math.floor(Math.random()*petals.length)];
+      el.style.left = Math.random()*100 + 'vw';
+      el.style.animationDuration = (2.5 + Math.random()*2) + 's';
+      el.style.fontSize = (16 + Math.random()*14) + 'px';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 5000);
+    }
+  });
+</script>
+</body>
+</html>
